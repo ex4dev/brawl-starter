@@ -11,6 +11,7 @@
 #include <src/installer.h>
 #include <src/server_query.h>
 #include <src/launcher.h>
+
 namespace Ui {
 class kocity_qt;
 }
@@ -41,6 +42,7 @@ private slots:
     void publicServersReceived(QJsonDocument document);
     void loginActionTriggered();
     void loginResponseReceived(QJsonDocument document);
+    void addServer();
 };
 
 #endif // KOCITY_QT_H

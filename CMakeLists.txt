@@ -16,6 +16,7 @@ find_package(Qt5DBus REQUIRED)
 set(kocity-qt_SRC
   src/main.cpp
   src/ui/kocity-qt.cpp
+  src/ui/add_server_dialog.cpp
   src/installer.cpp
   src/server_query.cpp
   src/launcher.cpp

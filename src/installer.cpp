@@ -27,8 +27,7 @@ installer::installer(QString installDir) {
     });
 }
 void installer::startGameInstallation() {
-    QUrl requestUrl("https://www.google.com/webhp");
-    // QUrl requestUrl("https://chonky-delivery-network.akamaized.net/KnockoutCity-HighRes-10.0-269701.zip");
+    QUrl requestUrl("https://chonky-delivery-network.akamaized.net/KnockoutCity-HighRes-10.0-269701.zip");
 
     // Step 1: open the file
     // TODO make it automatically create the folder
@@ -44,7 +43,6 @@ void installer::startGameInstallation() {
     // Step 2: create the request
     QNetworkRequest request(requestUrl);
     request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true); // TODO is this needed?
-    // request.setAttribute(QNetworkRequest::HttpPipeliningAllowedAttribute, true);
     QNetworkReply* reply = manager->get(request);
 
     // Step 3: read data when it's ready
@@ -60,7 +58,6 @@ void installer::startGameInstallation() {
     });
     connect(reply, &QNetworkReply::downloadProgress, this, [=](qint64 bytesReceived, qint64 bytesTotal) {
         if (bytesTotal < 0) return;
-        // std::cout << "Progress update: " << bytesReceived << "/" << bytesTotal << std::endl;
         emit progressUpdated(bytesReceived, bytesTotal);
     });
     emit installationStarted();

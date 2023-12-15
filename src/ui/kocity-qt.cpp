@@ -6,6 +6,7 @@
 #include <QtDBus/QDBusMessage>
 #include <QtDBus/QDBusConnection>
 #include <QInputDialog>
+#include "add_server_dialog.h"
 
 using std::cout;
 using std::endl;
@@ -20,6 +21,7 @@ kocity_qt::kocity_qt(QWidget *parent) :
 
     connect(m_ui->actionPlay, &QAction::triggered, this, &kocity_qt::launchGame);
     connect(m_ui->actionSettings, &QAction::triggered, this, &kocity_qt::openSettings);
+    connect(m_ui->actionAddServer, &QAction::triggered, this, &kocity_qt::addServer);
 
     m_ui->progressBar->hide();
 
@@ -98,13 +100,10 @@ void kocity_qt::gameInstallationStarted() {
 
 void kocity_qt::gameDownloadProgressUpdated(qint64 bytesReceived, qint64 bytesTotal) {
     auto message = QDBusMessage::createSignal(QStringLiteral("/dev/ex4/KoCityQt"), QStringLiteral("com.canonical.Unity.LauncherEntry"), QStringLiteral("Update"));
-    //you don't always have to specify all parameters, just the ones you want to update
     double percentComplete = (double) bytesReceived / bytesTotal;
     QVariantMap properties;
-    properties.insert(QStringLiteral("progress-visible"), true);// enable the progress
-    properties.insert(QStringLiteral("progress"), (percentComplete));// set the progress value (from 0.0 to 1.0)
-    properties.insert(QStringLiteral("count-visible"), false);// display the "counter badge"
-    properties.insert(QStringLiteral("count"), 0);// set the counter value
+    properties.insert(QStringLiteral("progress-visible"), true);
+    properties.insert(QStringLiteral("progress"), (percentComplete));
 
     message << QStringLiteral("application://kocityqt.desktop")
             << properties;
@@ -165,6 +164,11 @@ void kocity_qt::loginResponseReceived(QJsonDocument document) {
     m_settings->setValue("auth/username", username);
     m_settings->setValue("auth/token", obj.value("authToken").toString());
     m_ui->statusLabel->setText("Logged in as " + username);
+}
+
+void kocity_qt::addServer() {
+    add_server_dialog *dialog = new add_server_dialog();
+    dialog->exec();
 }
 
 
