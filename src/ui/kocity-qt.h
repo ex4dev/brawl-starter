@@ -40,6 +40,7 @@ private slots:
     void gameDownloadFinished();
     void gameInstallationFinished();
     void publicServersReceived(QJsonDocument document);
+    void refreshServerList();
     void loginActionTriggered();
     void loginResponseReceived(QJsonDocument document);
     void addServer();

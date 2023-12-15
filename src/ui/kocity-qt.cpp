@@ -42,7 +42,7 @@ kocity_qt::kocity_qt(QWidget *parent) :
 
     connect(m_ui->actionLogin, &QAction::triggered, this, &kocity_qt::loginActionTriggered);
 
-    m_server_query_manager->getPublicServers();
+    refreshServerList();
 }
 
 kocity_qt::~kocity_qt() = default;
@@ -72,18 +72,32 @@ void kocity_qt::launchGame() {
         m_installer->startGameInstallation();
         return;
     }
-    QString username = m_settings->value("auth/username").toString();
-    QString token = m_settings->value("auth/token").toString();
-    if (username.isEmpty() || token.isEmpty()) {
-        QMessageBox dialog;
-        dialog.setText("You must log in to join this server.");
-        dialog.setWindowTitle("Error");
-        dialog.exec();
-        return;
-    }
     QString selectedAddress = m_ui->serverListWidget->selectedItems()[1]->text();
-    cout << "Launching " << selectedAddress.toStdString() << endl;
-    m_launcher->getKeyAndLaunch(username, token, selectedAddress);
+    QString selectedType = m_ui->serverListWidget->selectedItems()[4]->text();
+    QString selectedServerName = m_ui->serverListWidget->selectedItems()[0]->text();
+    int authType = selectedType == "Default" ? 1 : m_settings->value("servers/authentication_" + selectedServerName).toInt();
+    if (authType == 2) {
+        QString username = m_settings->value("offline-username", QVariant("Unnamed")).toString();
+        QString password = m_settings->value("servers/password_" + selectedServerName).toString();
+        m_launcher->launchGame(username, selectedAddress, password);
+        m_ui->statusLabel->setText("Launching " + selectedServerName + " as " + username);
+    } else if (authType == 1){
+        QString username = m_settings->value("auth/username").toString();
+        QString token = m_settings->value("auth/token").toString();
+        if (username.isEmpty() || token.isEmpty()) {
+            QMessageBox dialog;
+            dialog.setText("You must log in to join this server.");
+            dialog.setWindowTitle("Error");
+            dialog.exec();
+            return;
+        }
+        m_ui->statusLabel->setText("Logging in and launching " + selectedServerName);
+        m_launcher->getKeyAndLaunch(username, token, selectedAddress);
+    } else {
+        QString username = m_settings->value("offline-username", QVariant("Unnamed")).toString();
+        m_ui->statusLabel->setText("Launching " + selectedServerName + " as " + username);
+        m_launcher->launchGame(username, selectedAddress);
+    }
 
 }
 
@@ -135,9 +149,6 @@ void kocity_qt::gameInstallationFinished()
 
 void kocity_qt::publicServersReceived(QJsonDocument document)
 {
-    m_ui->serverListWidget->clearContents();
-    m_ui->serverListWidget->setRowCount(0);
-    insertTableRow(m_ui->serverListWidget, {"Local Server", "localhost:23600"});
     for (QJsonValueRef element : document.array()) {
         QJsonObject obj = element.toObject();
         QString status = obj.find("status").value().toString("Unknown");
@@ -145,8 +156,19 @@ void kocity_qt::publicServersReceived(QJsonDocument document)
         QString ip = obj.find("ip").value().toString("Unknown");
         int players = obj.find("players").value().toInt(-1);
         int maxPlayers = obj.find("maxPlayers").value().toInt(-1);
-        insertTableRow(m_ui->serverListWidget, { name, ip, QString::number(players) + " / " + QString::number(maxPlayers), status});
+        insertTableRow(m_ui->serverListWidget, { name, ip, QString::number(players) + " / " + QString::number(maxPlayers), status, "Default"});
     }
+}
+
+void kocity_qt::refreshServerList() {
+    m_ui->serverListWidget->clearContents();
+    m_ui->serverListWidget->setRowCount(0);
+    QStringList privateServers = m_settings->value("servers/servers").toStringList();
+    for (QString serverName : privateServers) {
+        QString serverAddress = m_settings->value("servers/address_" + serverName).toString();
+        insertTableRow(m_ui->serverListWidget, { serverName, serverAddress, "", "", "Custom" });
+    }
+    m_server_query_manager->getPublicServers();
 }
 
 void kocity_qt::loginActionTriggered() {
@@ -167,8 +189,17 @@ void kocity_qt::loginResponseReceived(QJsonDocument document) {
 }
 
 void kocity_qt::addServer() {
-    add_server_dialog *dialog = new add_server_dialog();
-    dialog->exec();
+    add_server_dialog dialog;
+    if (dialog.exec()) {
+        QString serverName = dialog.serverName();
+        QStringList servers = m_settings->value("servers/servers").toStringList() << serverName;
+        m_settings->setValue("servers/servers", servers);
+        m_settings->setValue("servers/address_" + serverName, dialog.serverAddress());
+        m_settings->setValue("servers/authentication_" + serverName, dialog.serverAuthType());
+        m_settings->setValue("servers/password_" + serverName, dialog.serverPassword());
+
+        insertTableRow(m_ui->serverListWidget, { serverName, dialog.serverAddress(), "", "", "Custom"});
+    }
 }
 
 
