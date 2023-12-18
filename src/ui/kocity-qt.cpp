@@ -6,7 +6,9 @@
 #include <QtDBus/QDBusMessage>
 #include <QtDBus/QDBusConnection>
 #include <QInputDialog>
+#include <QDir>
 #include "add_server_dialog.h"
+#include "settings_dialog.h"
 
 using std::cout;
 using std::endl;
@@ -18,6 +20,7 @@ kocity_qt::kocity_qt(QWidget *parent) :
 {
 
     m_ui->setupUi(this);
+    m_ui->serverListWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     connect(m_ui->actionPlay, &QAction::triggered, this, &kocity_qt::launchGame);
     connect(m_ui->actionSettings, &QAction::triggered, this, &kocity_qt::openSettings);
@@ -25,7 +28,9 @@ kocity_qt::kocity_qt(QWidget *parent) :
 
     m_ui->progressBar->hide();
 
-    m_installer = new installer("/home/tyler/.kocityqt");
+    QString gameDir = m_settings->value("directory").toString();
+    if (gameDir.isEmpty()) gameDir = QDir::homePath() + QDir::separator() + ".kocityqt";
+    m_installer = new installer(gameDir);
 
     connect(m_installer, &installer::installationStarted, this, &kocity_qt::gameInstallationStarted);
     connect(m_installer, &installer::progressUpdated, this, &kocity_qt::gameDownloadProgressUpdated);
@@ -35,12 +40,8 @@ kocity_qt::kocity_qt(QWidget *parent) :
     m_server_query_manager = new server_query();
     connect(m_server_query_manager, &server_query::publicServersReceived, this, &kocity_qt::publicServersReceived);
 
-    cout << "Hello" << endl;
-
-    m_launcher = new launcher("/home/tyler/.kocityqt");
+    m_launcher = new launcher(gameDir);
     connect(m_launcher, &launcher::loginResponseReceived, this, &kocity_qt::loginResponseReceived);
-
-    connect(m_ui->actionLogin, &QAction::triggered, this, &kocity_qt::loginActionTriggered);
 
     refreshServerList();
 }
@@ -102,7 +103,9 @@ void kocity_qt::launchGame() {
 }
 
 void kocity_qt::openSettings() {
-    cout << "Settings" << endl;
+    settings_dialog settingsDialog(this);
+    connect(&settingsDialog, &settings_dialog::onClickLogIn, this, &kocity_qt::loginActionTriggered);
+    cout << settingsDialog.exec() << endl;
 
 }
 

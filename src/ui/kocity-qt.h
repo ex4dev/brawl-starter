@@ -11,6 +11,7 @@
 #include <src/installer.h>
 #include <src/server_query.h>
 #include <src/launcher.h>
+#include "settings_dialog.h"
 
 namespace Ui {
 class kocity_qt;
