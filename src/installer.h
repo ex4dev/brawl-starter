@@ -27,6 +27,7 @@ class installer : public QObject {
         QNetworkAccessManager *manager;
         QString m_install_dir;
         QFile *m_temp_zip_file;
+        void writeNewData(QNetworkReply *data);
 };
 
 #endif
