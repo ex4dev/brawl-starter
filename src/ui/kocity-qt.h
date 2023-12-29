@@ -8,6 +8,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QSettings>
+#include <QProgressBar>
 #include <src/installer.h>
 #include <src/server_query.h>
 #include <src/launcher.h>
@@ -28,9 +29,11 @@ public:
 private:
     QScopedPointer<Ui::kocity_qt> m_ui;
     QScopedPointer<QSettings> m_settings;
-    installer *m_installer;
-    server_query *m_server_query_manager;
-    launcher *m_launcher;
+    QString m_game_directory;
+    QProgressBar *m_download_progress_bar;
+    QScopedPointer<installer> m_installer;
+    QScopedPointer<server_query> m_server_query_manager;
+    QScopedPointer<launcher> m_launcher;
     static void insertTableRow(QTableWidget *tableWidget, QStringList itemText);
 
 private slots:
@@ -45,6 +48,7 @@ private slots:
     void loginActionTriggered();
     void loginResponseReceived(QJsonDocument document);
     void addServer();
+    void deleteServer();
 };
 
 #endif // KOCITY_QT_H

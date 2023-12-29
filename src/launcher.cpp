@@ -7,14 +7,13 @@
 #include <QJsonObject>
 #include <iostream>
 
-launcher::launcher(QString installDir, QString runner) {
+launcher::launcher(QString *installDir, QString runner) : m_network_access_manager(new QNetworkAccessManager(this)){
     m_install_dir = installDir;
-    m_network_access_manager = new QNetworkAccessManager(this);
 }
 
 void launcher::launchGame(QString backend, QString username, QString secret) {
     QProcess *process = new QProcess(this);
-    process->setWorkingDirectory(m_install_dir + QDir::separator() + "KnockoutCity");
+    process->setWorkingDirectory(*m_install_dir + QDir::separator() + "KnockoutCity");
     process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
     process->start("/usr/bin/wine", { "KnockoutCity.exe", "-backend=" + backend, "-username=" + username, "-secret=" + secret });
     // TODO delete process?
@@ -22,7 +21,7 @@ void launcher::launchGame(QString backend, QString username, QString secret) {
 
 void launcher::launchGame(QString backend, QString username) {
     QProcess *process = new QProcess(this);
-    process->setWorkingDirectory(m_install_dir + QDir::separator() + "KnockoutCity");
+    process->setWorkingDirectory(*m_install_dir + QDir::separator() + "KnockoutCity");
     process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
     // TODO use runner variable instead of hardcoded wine
     process->start("/usr/bin/wine", { "KnockoutCity.exe", "-backend=" + backend, "-username=" + username});

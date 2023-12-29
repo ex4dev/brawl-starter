@@ -3,12 +3,9 @@
 #include <qdir.h>
 #include <qprocess.h>
 
-installer::installer(QString installDir) {
+installer::installer(QString *installDir) {
     m_install_dir = installDir;
     manager = new QNetworkAccessManager(this);
-    // QObject::connect(manager, &QNetworkAccessManager::finished, this, [=](QNetworkReply *reply) {
-    //     // TODO delete this whole thing
-    // });
 }
 void installer::startGameInstallation() {
     QUrl requestUrl("https://chonky-delivery-network.akamaized.net/KnockoutCity-HighRes-10.0-269701.zip");
@@ -16,7 +13,7 @@ void installer::startGameInstallation() {
     // Step 1: open the file
     // TODO make it automatically create the folder
 
-    m_temp_zip_file = new QFile(m_install_dir + QDir::separator() + requestUrl.fileName());
+    m_temp_zip_file = new QFile(*m_install_dir + QDir::separator() + requestUrl.fileName());
     std::cout << "Saving to " << m_temp_zip_file->fileName().toStdString() << std::endl;
     if (!m_temp_zip_file->open(QIODevice::WriteOnly)) {
         std::cout << "Warning: failed to open file" << std::endl;
@@ -52,7 +49,7 @@ void installer::startGameInstallation() {
         process->connect(process, &QProcess::errorOccurred, this, [=](QProcess::ProcessError error) {
             std::cout << "Error occured while extracting the files: " << error << std::endl;
         });
-        process->setWorkingDirectory(m_install_dir);
+        process->setWorkingDirectory(*m_install_dir);
         process->start("unzip", QStringList() << reply->request().url().fileName());
         reply->deleteLater();
     });
@@ -77,6 +74,6 @@ void installer::writeNewData(QNetworkReply *reply) {
 }
 
 bool installer::checkInstalled() {
-    QFileInfo info(m_install_dir + QDir::separator() + "KnockoutCity");
+    QFileInfo info(*m_install_dir + QDir::separator() + "KnockoutCity");
     return info.exists() && info.isDir();
 }

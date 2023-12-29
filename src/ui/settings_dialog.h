@@ -19,6 +19,9 @@ class settings_dialog : public QDialog
 
     signals:
         void onClickLogIn();
+        void onClickLogOut();
+    private slots:
+        void browseInstallLocation();
 
     private:
         QScopedPointer<Ui::settings_dialog> m_ui;

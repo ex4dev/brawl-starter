@@ -11,7 +11,7 @@ class installer : public QObject {
     Q_OBJECT
 
     public:
-        installer(QString installDir);
+        installer(QString *installDir);
         /**
          * Returns true if the KnockoutCity folder exists inside the game install directory.
         **/
@@ -25,7 +25,7 @@ class installer : public QObject {
         void finished();
     private:
         QNetworkAccessManager *manager;
-        QString m_install_dir;
+        QString *m_install_dir;
         QFile *m_temp_zip_file;
         void writeNewData(QNetworkReply *data);
 };

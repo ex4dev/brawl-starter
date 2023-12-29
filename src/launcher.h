@@ -9,7 +9,7 @@ class launcher : public QObject
 {
     Q_OBJECT
     public:
-        launcher(QString installDir, QString runner = "wine");
+        launcher(QString *installDir, QString runner = "wine");
         void launchGame(QString backend, QString username, QString secret);
         void launchGame(QString backend, QString username);
         void openLoginUrl();
@@ -18,8 +18,8 @@ class launcher : public QObject
     signals:
         void loginResponseReceived(QJsonDocument document);
     private:
-        QString m_install_dir;
-        QNetworkAccessManager *m_network_access_manager;
+        QString *m_install_dir;
+        QScopedPointer<QNetworkAccessManager> m_network_access_manager;
 };
 
 #endif // LAUNCHER_H

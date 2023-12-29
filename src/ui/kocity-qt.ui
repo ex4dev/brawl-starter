@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>kocity-qt</string>
   </property>
+  <property name="statusTip">
+   <string/>
+  </property>
   <widget class="QWidget" name="centralWidget">
    <property name="sizePolicy">
     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -127,23 +130,6 @@
     </item>
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menuBar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>600</width>
-     <height>28</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menuAccount">
-    <property name="title">
-     <string>Account</string>
-    </property>
-    <addaction name="actionLogin"/>
-   </widget>
-   <addaction name="menuAccount"/>
-  </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="movable">
     <bool>false</bool>
@@ -162,6 +148,9 @@
    </attribute>
    <addaction name="actionPlay"/>
    <addaction name="actionAddServer"/>
+   <addaction name="actionDeleteServer"/>
+   <addaction name="separator"/>
+   <addaction name="actionRefresh"/>
    <addaction name="actionSettings"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -186,6 +175,22 @@
   <action name="actionLogin">
    <property name="text">
     <string>Login</string>
+   </property>
+  </action>
+  <action name="actionRefresh">
+   <property name="text">
+    <string>Refresh</string>
+   </property>
+   <property name="shortcut">
+    <string>F5</string>
+   </property>
+  </action>
+  <action name="actionDeleteServer">
+   <property name="text">
+    <string>Delete Server</string>
+   </property>
+   <property name="shortcut">
+    <string>Del</string>
    </property>
   </action>
  </widget>
