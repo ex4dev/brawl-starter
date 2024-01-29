@@ -11,7 +11,9 @@ void installer::startGameInstallation() {
     QUrl requestUrl("https://chonky-delivery-network.akamaized.net/KnockoutCity-HighRes-10.0-269701.zip");
 
     // Step 1: open the file
-    // TODO make it automatically create the folder
+
+    QDir install_directory(*m_install_dir);
+    if (!install_directory.exists()) install_directory.mkpath(".");
 
     m_temp_zip_file = new QFile(*m_install_dir + QDir::separator() + requestUrl.fileName());
     std::cout << "Saving to " << m_temp_zip_file->fileName().toStdString() << std::endl;

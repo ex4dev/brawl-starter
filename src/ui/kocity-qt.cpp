@@ -18,6 +18,7 @@ kocity_qt::kocity_qt(QWidget *parent) :
     m_ui(new Ui::kocity_qt),
     m_settings(new QSettings()),
     m_game_directory(m_settings->value("directory", QDir::homePath() + QDir::separator() + ".kocityqt").toString()),
+    m_download_progress_bar(nullptr),
     m_installer(new installer(&m_game_directory)),
     m_server_query_manager(new server_query()),
     m_launcher(new launcher(&m_game_directory))
@@ -32,7 +33,7 @@ kocity_qt::kocity_qt(QWidget *parent) :
     connect(m_ui->actionRefresh, &QAction::triggered, this, &kocity_qt::refreshServerList);
     connect(m_ui->actionDeleteServer, &QAction::triggered, this, &kocity_qt::deleteServer);
 
-    m_ui->progressBar->hide();
+    if (!m_installer->checkInstalled()) m_ui->actionPlay->setText("Install");
 
     connect(m_installer.data(), &installer::installationStarted, this, &kocity_qt::gameInstallationStarted);
     connect(m_installer.data(), &installer::progressUpdated, this, &kocity_qt::gameDownloadProgressUpdated);
@@ -51,7 +52,6 @@ kocity_qt::~kocity_qt() = default;
 void kocity_qt::insertTableRow(QTableWidget* tableWidget, QStringList itemText)
 {
     int rowCount = tableWidget->rowCount();
-    int columnCount = tableWidget->columnCount();
     tableWidget->insertRow(rowCount);
     for (qsizetype i = 0; i < itemText.size(); ++i) {
         const QString &str = itemText.at(i);
@@ -61,18 +61,14 @@ void kocity_qt::insertTableRow(QTableWidget* tableWidget, QStringList itemText)
 }
 
 void kocity_qt::launchGame() {
+    // TODO test this
+    if (!m_installer->checkInstalled()) {
+        m_installer->startGameInstallation();
+        return;
+    }
     QList<QTableWidgetItem*> selectedItems = m_ui->serverListWidget->selectedItems();
     if (selectedItems.size() == 0) {
         QMessageBox::critical(this, "Error", "Please select a server.");
-        return;
-    }
-    // TODO test this
-    if (!m_installer->checkInstalled()) {
-        if (m_download_progress_bar == nullptr) {
-            m_download_progress_bar = new QProgressBar();
-            m_ui->statusBar->addPermanentWidget(m_download_progress_bar);
-        }
-        m_installer->startGameInstallation();
         return;
     }
     QString selectedAddress = m_ui->serverListWidget->selectedItems()[1]->text();
@@ -110,8 +106,11 @@ void kocity_qt::openSettings() {
 
 void kocity_qt::gameInstallationStarted() {
     m_ui->statusBar->showMessage("Downloading files...");
-    m_ui->progressBar->setValue(0);
-    m_ui->progressBar->show();
+    if (m_download_progress_bar == nullptr) {
+        m_download_progress_bar = new QProgressBar(this);
+        m_ui->statusBar->addPermanentWidget(m_download_progress_bar);
+    }
+    m_download_progress_bar->setValue(0);
 }
 
 void kocity_qt::gameDownloadProgressUpdated(qint64 bytesReceived, qint64 bytesTotal) {
@@ -121,22 +120,24 @@ void kocity_qt::gameDownloadProgressUpdated(qint64 bytesReceived, qint64 bytesTo
     properties.insert(QStringLiteral("progress-visible"), true);
     properties.insert(QStringLiteral("progress"), (percentComplete));
 
-    message << QStringLiteral("application://kocityqt.desktop")
+    message << QStringLiteral("application://kocity-qt.desktop")
             << properties;
     QDBusConnection::sessionBus().send(message);
 
-    m_ui->progressBar->setValue(100 * percentComplete);
+    m_download_progress_bar->setValue(100 * percentComplete);
 }
 
 void kocity_qt::gameDownloadFinished() {
-    m_ui->progressBar->hide();
     m_ui->statusBar->showMessage("Extracting downloaded files...");
     cout << "[UI] Download finished" << endl;
 }
 
 void kocity_qt::gameInstallationFinished()
 {
+    m_ui->actionPlay->setText("Play");
     m_ui->statusBar->showMessage("Installation complete.");
+    m_ui->statusBar->removeWidget(m_download_progress_bar);
+    m_download_progress_bar->deleteLater();
     // TODO linux check
     // Hide taskbar download progress
     auto message = QDBusMessage::createSignal(QStringLiteral("/dev/ex4/KoCityQt"), QStringLiteral("com.canonical.Unity.LauncherEntry"), QStringLiteral("Update"));
@@ -176,7 +177,7 @@ void kocity_qt::refreshServerList() {
 void kocity_qt::loginActionTriggered() {
     m_launcher->openLoginUrl();
     bool ok;
-    QString loginCode = QInputDialog::getText(this, "Login", "Enter the six-digit code from the website that just opened.", QLineEdit::Normal, "", &ok);
+    QString loginCode = QInputDialog::getText(nullptr, "Login", "Enter the six-digit code from the website that just opened.", QLineEdit::Normal, "", &ok, Qt::WindowStaysOnTopHint);
     if (ok && !loginCode.isEmpty()) {
         m_launcher->login(loginCode);
     }

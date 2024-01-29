@@ -9,7 +9,7 @@ settings_dialog::settings_dialog(QWidget *parent) : m_ui(new Ui::settings_dialog
     connect(m_ui->btnSignOut, &QAbstractButton::clicked, this, &settings_dialog::onClickLogOut);
     connect(m_ui->btnBrowseInstallation, &QAbstractButton::clicked, this, &settings_dialog::browseInstallLocation);
 
-    m_ui->fldInstallLocation->setText(m_settings->value("directory").toString());
+    m_ui->fldInstallLocation->setText(m_settings->value("directory", QDir::homePath() + QDir::separator() + ".kocityqt").toString());
     QString username = m_settings->value("auth/username").toString();
     m_ui->lblLoggedIn->setText(username.isEmpty() ? "Not logged in" : "Logged in as " + username);
     if (username.isEmpty()) m_ui->btnSignOut->hide();
@@ -21,7 +21,7 @@ settings_dialog::settings_dialog(QWidget *parent) : m_ui(new Ui::settings_dialog
 
 void settings_dialog::browseInstallLocation() {
     QFileDialog dialog;
-    dialog.setFileMode(QFileDialog::DirectoryOnly);
+    dialog.setOption(QFileDialog::ShowDirsOnly, true);
     if (dialog.exec()) {
         QString newDir = dialog.selectedFiles()[0];
         m_ui->fldInstallLocation->setText(newDir);
