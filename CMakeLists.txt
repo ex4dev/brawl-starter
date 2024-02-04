@@ -9,9 +9,9 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 
 # Find the QtWidgets library
-find_package(Qt5Widgets CONFIG REQUIRED)
-find_package(Qt5Network REQUIRED)
-find_package(Qt5DBus REQUIRED)
+find_package(Qt6Widgets CONFIG REQUIRED)
+find_package(Qt6Network REQUIRED)
+find_package(Qt6DBus REQUIRED)
 
 set(kocity-qt_SRC
   src/main.cpp
@@ -27,7 +27,7 @@ set(kocity-qt_SRC
 add_executable(kocity-qt ${kocity-qt_SRC})
 
 # Use the Widgets module from Qt 5.
-target_link_libraries(kocity-qt Qt5::Widgets Qt5::Network Qt5::DBus)
+target_link_libraries(kocity-qt Qt6::Widgets Qt6::Network Qt6::DBus)
 
 # Install the executable
 install(TARGETS kocity-qt DESTINATION bin)

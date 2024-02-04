@@ -25,7 +25,6 @@ void installer::startGameInstallation() {
 
     // Step 2: create the request
     QNetworkRequest request(requestUrl);
-    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true); // TODO is this needed?
     QNetworkReply* reply = manager->get(request);
 
     // Step 3: read data when it's ready
