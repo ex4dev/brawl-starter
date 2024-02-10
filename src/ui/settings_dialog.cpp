@@ -11,6 +11,7 @@ settings_dialog::settings_dialog(QSettings *settings) : m_ui(new Ui::settings_di
     connect(m_ui->buttonBox->button(QDialogButtonBox::Ok), &QAbstractButton::clicked, this, &settings_dialog::saveSettings);
 
     m_ui->fldInstallLocation->setText(m_settings->value(constants::SETTING_PATH_INSTALL_DIR, constants::SETTING_DEFAULT_INSTALL_DIR).toString());
+    m_ui->fldUsername->setText(m_settings->value(constants::SETTING_PATH_OFFLINE_USERNAME, constants::SETTING_DEFAULT_OFFLINE_USERNAME).toString());
     QString username = m_settings->value(constants::SETTING_PATH_USERNAME).toString();
     m_ui->lblLoggedIn->setText(username.isEmpty() ? QStringLiteral("Not logged in") : QStringLiteral("Logged in as ") + username);
     if (username.isEmpty()) m_ui->btnSignOut->hide();
@@ -31,4 +32,5 @@ void settings_dialog::browseInstallLocation() {
 
 void settings_dialog::saveSettings() {
     m_settings->setValue(constants::SETTING_PATH_INSTALL_DIR, m_ui->fldInstallLocation->text());
+    m_settings->setValue(constants::SETTING_PATH_OFFLINE_USERNAME, m_ui->fldUsername->text());
 }

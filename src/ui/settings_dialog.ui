@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>550</width>
-    <height>300</height>
+    <height>369</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -25,6 +25,42 @@
   <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0">
    <item>
     <layout class="QVBoxLayout" name="settingsVerticalLayout">
+     <item>
+      <widget class="QGroupBox" name="profileGroupBox">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="title">
+        <string>Profile</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_5">
+        <item>
+         <layout class="QHBoxLayout" name="usernameLayout">
+          <item>
+           <widget class="QLabel" name="lblUsername">
+            <property name="text">
+             <string>Username</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="fldUsername"/>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QLabel" name="lblUsernameExplainer">
+          <property name="text">
+           <string>This will be visible to other players for servers that do not require you to log in.</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
      <item>
       <widget class="QGroupBox" name="installationGroupBox">
        <property name="sizePolicy">
@@ -73,7 +109,7 @@
      <item>
       <widget class="QGroupBox" name="authenticationGroupBox">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Maximum">
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>

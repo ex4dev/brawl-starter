@@ -78,7 +78,7 @@ void kocity_qt::launchGame() {
         QString username = m_settings->value(constants::SETTING_PATH_USERNAME).toString();
         QString token = m_settings->value(constants::SETTING_PATH_TOKEN).toString();
         if (username.isEmpty() || token.isEmpty()) {
-            QMessageBox::critical(this, constants::STR_ERROR, QStringLiteral("You must log in to join this server."));
+            QMessageBox::critical(this, constants::STR_ERROR, QStringLiteral("Before you can join this server, you must log in from the settings window."));
             return;
         }
         m_ui->statusBar->showMessage(QStringLiteral("Logging in and launching ") + selectedServerName);
