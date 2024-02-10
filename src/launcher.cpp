@@ -6,36 +6,41 @@
 #include <QNetworkReply>
 #include <QJsonObject>
 #include <iostream>
+#include <QMessageBox>
 
-launcher::launcher(QString *installDir, QString runner) : m_network_access_manager(new QNetworkAccessManager(this)){
-    m_install_dir = installDir;
-}
+#include "constants.h"
+
+launcher::launcher(QSettings *settings) :
+    m_settings(settings),
+    m_network_access_manager(new QNetworkAccessManager(this)) {}
 
 void launcher::launchGame(QString backend, QString username, QString secret) {
     QProcess *process = new QProcess(this);
-    process->setWorkingDirectory(*m_install_dir + QDir::separator() + "KnockoutCity");
+    QDir installDir = QDir(m_settings->value(constants::SETTING_PATH_INSTALL_DIR, constants::SETTING_DEFAULT_INSTALL_DIR).toString());
+    process->setWorkingDirectory(installDir.filePath(QStringLiteral("KnockoutCity")));
     process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
-    process->start("/usr/bin/wine", { "KnockoutCity.exe", "-backend=" + backend, "-username=" + username, "-secret=" + secret });
-    // TODO delete process?
-}
+    if (secret == nullptr) {
+        process->start(constants::RUNNER_PATH, { "KnockoutCity.exe", "-backend=" + backend, "-username=" + username});
+    } else {
+        process->start(constants::RUNNER_PATH, { "KnockoutCity.exe", "-backend=" + backend, "-username=" + username, "-secret=" + secret });
+    }
 
-void launcher::launchGame(QString backend, QString username) {
-    QProcess *process = new QProcess(this);
-    process->setWorkingDirectory(*m_install_dir + QDir::separator() + "KnockoutCity");
-    process->setProcessEnvironment(QProcessEnvironment::systemEnvironment());
-    // TODO use runner variable instead of hardcoded wine
-    process->start("/usr/bin/wine", { "KnockoutCity.exe", "-backend=" + backend, "-username=" + username});
-    std::cout << "/usr/bin/wine" << process->arguments().join(" ").toStdString() << std::endl;
-    // TODO delete process?
+    connect(process, &QProcess::errorOccurred, this, [=](QProcess::ProcessError error) {
+        QMessageBox::critical(nullptr, constants::STR_ERROR, QStringLiteral("An error occured with the game process: ") + QString::number(error));
+    });
+    connect(process, &QProcess::finished, this, [=](int exitCode, QProcess::ExitStatus) {
+        std::cout << "Game process exited with code " + exitCode << std::endl;
+        process->deleteLater();
+    });
 }
 
 void launcher::openLoginUrl() {
-    QDesktopServices::openUrl(QUrl("https://api.kocity.xyz/web/discord"));
+    QDesktopServices::openUrl(constants::XYZ_LOGIN_PAGE_URL);
 }
 
 // TODO add support for account registration
 void launcher::login(QString loginCode) {
-    QNetworkRequest request(QUrl("https://api.kocity.xyz/auth/login"));
+    QNetworkRequest request(constants::XYZ_LOGIN_REQUEST_URL);
     QString body = "{\"code\": \"" + loginCode + "\"}";
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     QNetworkReply *reply = m_network_access_manager->post(request, body.toUtf8());
@@ -48,7 +53,7 @@ void launcher::login(QString loginCode) {
 }
 
 void launcher::getKeyAndLaunch(QString username, QString authToken, QString server) {
-    QNetworkRequest request(QUrl("https://api.kocity.xyz/auth/getkey"));
+    QNetworkRequest request(constants::XYZ_LOGIN_KEY_URL);
     QString body = "{\"username\": \"" + username + "\", \"authToken\": \"" + authToken + "\", \"server\": \"" + server + "\"}";
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     QNetworkReply *reply = m_network_access_manager->post(request, body.toUtf8());

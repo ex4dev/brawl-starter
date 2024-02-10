@@ -21,6 +21,7 @@ set(kocity-qt_SRC
   src/installer.cpp
   src/server_query.cpp
   src/launcher.cpp
+  src/constants.h
 )
 
 # Tell CMake to create the helloworld executable

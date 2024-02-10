@@ -1,24 +1,23 @@
 #ifndef LAUNCHER_H
 #define LAUNCHER_H
 
-#include <QObject>
+#include <QSettings>
 #include <QNetworkAccessManager>
 #include <QJsonDocument>
 
-class launcher : public QObject
+class launcher final : public QObject
 {
     Q_OBJECT
     public:
-        launcher(QString *installDir, QString runner = "wine");
-        void launchGame(QString backend, QString username, QString secret);
-        void launchGame(QString backend, QString username);
+        launcher(QSettings *settings);
+        void launchGame(QString backend, QString username, QString secret = nullptr);
         void openLoginUrl();
         void login(QString loginCode);
         void getKeyAndLaunch(QString username, QString authToken, QString server);
     signals:
         void loginResponseReceived(QJsonDocument document);
     private:
-        QString *m_install_dir;
+        QSettings *m_settings;
         QScopedPointer<QNetworkAccessManager> m_network_access_manager;
 };
 

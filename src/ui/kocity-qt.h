@@ -29,11 +29,10 @@ public:
 private:
     QScopedPointer<Ui::kocity_qt> m_ui;
     QScopedPointer<QSettings> m_settings;
-    QString m_game_directory;
     QProgressBar *m_download_progress_bar;
     QScopedPointer<installer> m_installer;
-    QScopedPointer<server_query> m_server_query_manager;
     QScopedPointer<launcher> m_launcher;
+    QScopedPointer<server_query> m_server_query_manager;
     static void insertTableRow(QTableWidget *tableWidget, QStringList itemText);
 
 private slots:

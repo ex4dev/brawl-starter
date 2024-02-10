@@ -1,24 +1,29 @@
 #include "installer.h"
-#include <iostream>
 #include <qdir.h>
+#include <QMessageBox>
 #include <qprocess.h>
+#include <QSettings>
 
-installer::installer(QString *installDir) {
-    m_install_dir = installDir;
+#include "constants.h"
+
+installer::installer(QSettings *settings) {
+    m_settings = settings;
     manager = new QNetworkAccessManager(this);
 }
 void installer::startGameInstallation() {
-    QUrl requestUrl("https://chonky-delivery-network.akamaized.net/KnockoutCity-HighRes-10.0-269701.zip");
+    const QUrl requestUrl(QStringLiteral("https://chonky-delivery-network.akamaized.net/KnockoutCity-HighRes-10.0-269701.zip"));
 
     // Step 1: open the file
 
-    QDir install_directory(*m_install_dir);
-    if (!install_directory.exists()) install_directory.mkpath(".");
+    const QDir installDir(m_settings->value(constants::SETTING_PATH_INSTALL_DIR, constants::SETTING_DEFAULT_INSTALL_DIR).toString());
+    if (!installDir.exists() && !installDir.mkpath(".")) {
+        QMessageBox::critical(nullptr, constants::STR_ERROR, QStringLiteral("Failed to create directory at ") + installDir.path());
+        return;
+    }
 
-    m_temp_zip_file = new QFile(*m_install_dir + QDir::separator() + requestUrl.fileName());
-    std::cout << "Saving to " << m_temp_zip_file->fileName().toStdString() << std::endl;
+    m_temp_zip_file = new QFile(installDir.filePath(requestUrl.fileName()));
     if (!m_temp_zip_file->open(QIODevice::WriteOnly)) {
-        std::cout << "Warning: failed to open file" << std::endl;
+        QMessageBox::critical(nullptr, constants::STR_ERROR, QStringLiteral("Failed to open download file. Double check that write permissions are enabled for the installation directory."));
         delete m_temp_zip_file;
         return;
     }
@@ -35,22 +40,20 @@ void installer::startGameInstallation() {
 
     connect(reply, &QNetworkReply::finished, this, [=]() {
         writeNewData(reply);
-        std::cout << "Download finished." << std::endl;
         QProcess *process = new QProcess(this);
         emit downloadFinished();
-        process->connect(process, &QProcess::stateChanged, this, [=](QProcess::ProcessState newState) {
+        connect(process, &QProcess::stateChanged, this, [=](QProcess::ProcessState newState) {
             if (newState == QProcess::ProcessState::NotRunning) {
-                std::cout << "Installation complete." << std::endl;
                 m_temp_zip_file->remove();
                 m_temp_zip_file->deleteLater();
                 emit finished();
                 process->deleteLater();
             }
         });
-        process->connect(process, &QProcess::errorOccurred, this, [=](QProcess::ProcessError error) {
-            std::cout << "Error occured while extracting the files: " << error << std::endl;
+        connect(process, &QProcess::errorOccurred, this, [=](QProcess::ProcessError error) {
+            QMessageBox::critical(nullptr, constants::STR_ERROR, QStringLiteral("An error occured while extracting the downloaded files: ") + QString::number(error));
         });
-        process->setWorkingDirectory(*m_install_dir);
+        process->setWorkingDirectory(installDir.path());
         process->start("unzip", QStringList() << reply->request().url().fileName());
         reply->deleteLater();
     });
@@ -66,15 +69,16 @@ void installer::writeNewData(QNetworkReply *reply) {
     if (m_temp_zip_file != nullptr && m_temp_zip_file->isOpen()) {
         m_temp_zip_file->write(data);
     } else {
-        std::cout << "Failed to write to file. Aborting download." << std::endl;
+        QMessageBox::critical(nullptr, constants::STR_ERROR, QStringLiteral("Failed to write new data to file. Aborting download."));
         delete m_temp_zip_file;
         reply->abort();
         reply->deleteLater();
-        return;
     }
 }
 
 bool installer::checkInstalled() {
-    QFileInfo info(*m_install_dir + QDir::separator() + "KnockoutCity");
+    QSettings settings;
+    QString installDir = m_settings->value(constants::SETTING_PATH_INSTALL_DIR, constants::SETTING_DEFAULT_INSTALL_DIR).toString();
+    QFileInfo info(QDir(installDir).filePath("KnockoutCity"));
     return info.exists() && info.isDir();
 }

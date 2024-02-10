@@ -1,17 +1,15 @@
 #ifndef INSTALLER_H
 #define INSTALLER_H
 
-#include <QObject>
-#include <QtNetwork/QNetworkAccessManager>
-#include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkReply>
-#include <qfile.h>
+#include <QFile>
+#include <QSettings>
 
-class installer : public QObject {
+class installer final : public QObject {
     Q_OBJECT
 
     public:
-        installer(QString *installDir);
+        installer(QSettings *settings);
         /**
          * Returns true if the KnockoutCity folder exists inside the game install directory.
         **/
@@ -25,7 +23,7 @@ class installer : public QObject {
         void finished();
     private:
         QNetworkAccessManager *manager;
-        QString *m_install_dir;
+        QSettings *m_settings;
         QFile *m_temp_zip_file;
         void writeNewData(QNetworkReply *data);
 };
