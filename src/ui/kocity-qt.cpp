@@ -37,8 +37,6 @@ kocity_qt::kocity_qt(QWidget *parent) :
 
     connect(m_server_query_manager.data(), &server_query::publicServersReceived, this, &kocity_qt::publicServersReceived);
 
-    connect(m_launcher.data(), &launcher::loginResponseReceived, this, &kocity_qt::loginResponseReceived);
-
     refreshServerList();
 }
 
@@ -93,7 +91,6 @@ void kocity_qt::launchGame() {
 
 void kocity_qt::openSettings() {
     settings_dialog settingsDialog(m_settings.get());
-    connect(&settingsDialog, &settings_dialog::onClickLogIn, this, &kocity_qt::loginActionTriggered); // TODO move this behavior to settings dialog
     settingsDialog.exec();
 }
 
@@ -164,23 +161,6 @@ void kocity_qt::refreshServerList() {
         insertTableRow(m_ui->serverListWidget, { serverName, serverAddress, "", "", "Custom" });
     }
     m_server_query_manager->getPublicServers();
-}
-
-void kocity_qt::loginActionTriggered() {
-    m_launcher->openLoginUrl();
-    bool ok;
-    QString loginCode = QInputDialog::getText(nullptr, "Login", "Enter the six-digit code from the website that just opened.", QLineEdit::Normal, "", &ok, Qt::WindowStaysOnTopHint);
-    if (ok && !loginCode.isEmpty()) {
-        m_launcher->login(loginCode);
-    }
-}
-
-void kocity_qt::loginResponseReceived(QJsonDocument document) {
-    QJsonObject obj = document.object();
-    QString username = obj.value("username").toString();
-    m_settings->setValue(constants::SETTING_PATH_USERNAME, username);
-    m_settings->setValue(constants::SETTING_PATH_TOKEN, obj.value("authToken").toString());
-    m_ui->statusBar->showMessage(QStringLiteral("Logged in as ") + username);
 }
 
 void kocity_qt::addServer() {

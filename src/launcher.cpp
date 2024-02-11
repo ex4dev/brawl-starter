@@ -1,8 +1,5 @@
 #include "launcher.h"
 #include <QProcess>
-#include <QDir>
-#include <QDesktopServices>
-#include <QUrl>
 #include <QNetworkReply>
 #include <QJsonObject>
 #include <iostream>
@@ -31,24 +28,6 @@ void launcher::launchGame(QString backend, QString username, QString secret) {
     connect(process, &QProcess::finished, this, [=](int exitCode, QProcess::ExitStatus) {
         std::cout << "Game process exited with code " + exitCode << std::endl;
         process->deleteLater();
-    });
-}
-
-void launcher::openLoginUrl() {
-    QDesktopServices::openUrl(constants::XYZ_LOGIN_PAGE_URL);
-}
-
-// TODO add support for account registration
-void launcher::login(QString loginCode) {
-    QNetworkRequest request(constants::XYZ_LOGIN_REQUEST_URL);
-    QString body = "{\"code\": \"" + loginCode + "\"}";
-    request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    QNetworkReply *reply = m_network_access_manager->post(request, body.toUtf8());
-    connect(reply, &QNetworkReply::finished, this, [=]() {
-        QByteArray data = reply->readAll();
-        QJsonDocument document = QJsonDocument::fromJson(data);
-        reply->deleteLater();
-        emit loginResponseReceived(document);
     });
 }
 

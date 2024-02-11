@@ -148,11 +148,6 @@
     <string>Settings</string>
    </property>
   </action>
-  <action name="actionLogin">
-   <property name="text">
-    <string>Login</string>
-   </property>
-  </action>
   <action name="actionRefresh">
    <property name="text">
     <string>Refresh</string>

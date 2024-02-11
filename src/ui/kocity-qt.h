@@ -4,10 +4,6 @@
 #include <QTableWidget>
 #include <QMainWindow>
 #include <QScopedPointer>
-#include <QJsonDocument>
-#include <QJsonArray>
-#include <QJsonObject>
-#include <QSettings>
 #include <QProgressBar>
 #include <src/installer.h>
 #include <src/server_query.h>
@@ -44,8 +40,6 @@ private slots:
     void gameInstallationFinished();
     void publicServersReceived(QJsonDocument document);
     void refreshServerList();
-    void loginActionTriggered();
-    void loginResponseReceived(QJsonDocument document);
     void addServer();
     void deleteServer();
 };

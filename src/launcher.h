@@ -11,11 +11,7 @@ class launcher final : public QObject
     public:
         launcher(QSettings *settings);
         void launchGame(QString backend, QString username, QString secret = nullptr);
-        void openLoginUrl();
-        void login(QString loginCode);
         void getKeyAndLaunch(QString username, QString authToken, QString server);
-    signals:
-        void loginResponseReceived(QJsonDocument document);
     private:
         QSettings *m_settings;
         QScopedPointer<QNetworkAccessManager> m_network_access_manager;

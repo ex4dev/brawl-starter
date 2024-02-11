@@ -21,6 +21,7 @@ namespace constants {
     static inline const QUrl XYZ_LOGIN_PAGE_URL = QUrl(QStringLiteral("https://api.kocity.xyz/web/discord"));
     static inline const QUrl XYZ_LOGIN_REQUEST_URL = QUrl(QStringLiteral("https://api.kocity.xyz/auth/login"));
     static inline const QUrl XYZ_LOGIN_KEY_URL = QUrl(QStringLiteral("https://api.kocity.xyz/auth/getkey"));
+    static inline const QUrl XYZ_REGISTER_REQUEST_URL = QUrl(QStringLiteral("https://api.kocity.xyz/auth/register"));
 
     static inline const QString STR_ERROR = QStringLiteral("Error");
 }
