@@ -104,7 +104,7 @@ void kocity_qt::gameInstallationStarted() {
 }
 
 void kocity_qt::gameDownloadProgressUpdated(qint64 bytesReceived, qint64 bytesTotal) {
-    auto message = QDBusMessage::createSignal(QStringLiteral("/dev/ex4/KoCityQt"), QStringLiteral("com.canonical.Unity.LauncherEntry"), QStringLiteral("Update"));
+    auto message = QDBusMessage::createSignal(QStringLiteral("/dev/tswanson/kocity-qt"), QStringLiteral("com.canonical.Unity.LauncherEntry"), QStringLiteral("Update"));
     double percentComplete = (double) bytesReceived / bytesTotal;
     QVariantMap properties;
     properties.insert(QStringLiteral("progress-visible"), true);
@@ -129,14 +129,14 @@ void kocity_qt::gameInstallationFinished()
     m_download_progress_bar->deleteLater();
     // TODO linux check
     // Hide taskbar download progress
-    auto message = QDBusMessage::createSignal(QStringLiteral("/dev/ex4/KoCityQt"), QStringLiteral("com.canonical.Unity.LauncherEntry"), QStringLiteral("Update"));
+    auto message = QDBusMessage::createSignal(QStringLiteral("/dev/tswanson/kocity-qt"), QStringLiteral("com.canonical.Unity.LauncherEntry"), QStringLiteral("Update"));
     QVariantMap properties;
     properties.insert(QStringLiteral("progress-visible"), false);
     properties.insert(QStringLiteral("progress"), 0);
     message << QStringLiteral("application://kocity-qt.desktop")
             << properties;
     QDBusConnection::sessionBus().send(message);
-    system(R"(notify-send -a kocityqt "Installation complete" "Knockout City is installed and ready to be played.")");
+    system(R"(notify-send -a kocity-qt "Installation complete" "Knockout City is installed and ready to be played.")");
 }
 
 void kocity_qt::publicServersReceived(QJsonDocument document)

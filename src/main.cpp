@@ -3,9 +3,9 @@
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication::setApplicationName("kocity-qt");
-    QCoreApplication::setOrganizationDomain("ex4.dev");
-    QCoreApplication::setOrganizationName("ex4");
+    QCoreApplication::setApplicationName(QStringLiteral("kocity-qt"));
+    QCoreApplication::setOrganizationDomain(QStringLiteral("tswanson.dev"));
+    QCoreApplication::setOrganizationName(QStringLiteral("ex4"));
     QApplication app(argc, argv);
     kocity_qt w;
     w.show();
