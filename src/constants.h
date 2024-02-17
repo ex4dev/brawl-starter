@@ -6,7 +6,7 @@
 #include <QUrl>
 
 namespace constants {
-    static inline const QString SETTING_DEFAULT_INSTALL_DIR = QDir::homePath() + QDir::separator() + ".kocityqt";
+    static inline const QString SETTING_DEFAULT_INSTALL_DIR = QDir::homePath() + QDir::separator() + ".kocity";
     static inline const QVariant SETTING_DEFAULT_OFFLINE_USERNAME = QVariant(QStringLiteral("Brawler"));
     static inline const QString SETTING_PATH_USERNAME = QStringLiteral("auth/username");
     static inline const QString SETTING_PATH_OFFLINE_USERNAME = QStringLiteral("offline-username");

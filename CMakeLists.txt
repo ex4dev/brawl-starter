@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(kocity-qt)
+project(brawl-starter)
 
 # Find includes in corresponding build directories
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -17,7 +17,7 @@ find_package(Qt6DBus REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(libsecret-1 REQUIRED IMPORTED_TARGET libsecret-1)
 
-set(kocity-qt_SRC
+set(brawl-starter_SRC
         src/main.cpp
         src/ui/kocity-qt.cpp
         src/ui/add_server_dialog.cpp
@@ -30,10 +30,10 @@ set(kocity-qt_SRC
 )
 
 # Tell CMake to create the helloworld executable
-add_executable(kocity-qt ${kocity-qt_SRC})
+add_executable(brawl-starter ${brawl-starter_SRC})
 
 # Use the Widgets module from Qt 5.
-target_link_libraries(kocity-qt Qt6::Widgets Qt6::Network Qt6::DBus PkgConfig::libsecret-1)
+target_link_libraries(brawl-starter Qt6::Widgets Qt6::Network Qt6::DBus PkgConfig::libsecret-1)
 
 # Install the executable
-install(TARGETS kocity-qt DESTINATION bin)
+install(TARGETS brawl-starter DESTINATION bin)

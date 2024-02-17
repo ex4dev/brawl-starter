@@ -7,7 +7,7 @@
 #include "constants.h"
 
 static constexpr SecretSchema schema = {
-    "dev.tswanson.kocity-qt", SECRET_SCHEMA_NONE,
+    "dev.tswanson.brawl-starter", SECRET_SCHEMA_NONE,
     {
             {"username", SECRET_SCHEMA_ATTRIBUTE_STRING},
         }
