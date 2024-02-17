@@ -3,13 +3,13 @@
 #include <QDesktopServices>
 
 #include "src/constants.h"
+#include "src/secrets.h"
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QNetworkReply>
 #include <QNetworkRequest>
-#include <iostream>
 #include <QMessageBox>
 
 settings_dialog::settings_dialog(QSettings *settings) :
@@ -55,15 +55,12 @@ QString settings_dialog::getDiscordCode() {
     bool ok;
     QString loginCode = QInputDialog::getText(this, QStringLiteral("Login"), QStringLiteral("Enter the six-digit code from the website that just opened."), QLineEdit::Normal, "", &ok, Qt::WindowStaysOnTopHint);
     if (ok && !loginCode.isEmpty()) {
-        std::cout << "Got login code " << loginCode.toStdString() << std::endl;
         return loginCode;
     }
-    std::cout << "No code :(" << std::endl;
     return nullptr;
 }
 
 void settings_dialog::login(const QString &loginCode) {
-    std::cout << "Attempting to log in with Discord code: " << loginCode.toStdString() << std::endl;
     QNetworkRequest request(constants::XYZ_LOGIN_REQUEST_URL);
     QString body = "{\"code\": \"" + loginCode + "\"}";
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
@@ -75,7 +72,6 @@ void settings_dialog::login(const QString &loginCode) {
 }
 
 void settings_dialog::finishLogin(const QByteArray &responseData) {
-    std::cout << "Response received: " << responseData.toStdString() << std::endl;
     QJsonDocument document = QJsonDocument::fromJson(responseData);
     QJsonObject obj = document.object();
 
@@ -83,21 +79,24 @@ void settings_dialog::finishLogin(const QByteArray &responseData) {
     if (!message.isUndefined()) { // there was a server error during the login process
         QString type = obj.value("type").toString();
         if (type == QStringLiteral("account_exists")) {
-            QMessageBox::critical(this, constants::STR_ERROR, "A kocity.xyz account is already associated with this Discord account. Please log in instead.");
+            QMessageBox::critical(this, constants::STR_ERROR, QStringLiteral("A kocity.xyz account is already associated with this Discord account. Please log in instead."));
             return;
         }
         QMessageBox::critical(this, obj.value("type").toString(), message.toString());
         return;
     }
-    m_settings->setValue(constants::SETTING_PATH_USERNAME, obj.value("username").toString());
-    m_settings->setValue(constants::SETTING_PATH_TOKEN, obj.value("authToken").toString());
+    QString username = obj.value("username").toString();
+    m_settings->setValue(constants::SETTING_PATH_USERNAME, username);
+    storeToken(username.toLocal8Bit().data(), obj.value("authToken").toString().toLocal8Bit().data());
 
     updateLoginSection();
 }
 
 void settings_dialog::logout() {
+    QString username = m_settings->value(constants::SETTING_PATH_USERNAME).toString();
+    if (username.isEmpty()) return;
+    deleteToken(username.toLocal8Bit().data());
     m_settings->remove(constants::SETTING_PATH_USERNAME);
-    m_settings->remove(constants::SETTING_PATH_TOKEN);
     updateLoginSection();
 }
 

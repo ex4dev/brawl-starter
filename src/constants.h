@@ -3,12 +3,12 @@
 #include <QString>
 #include <QDir>
 #include <QVariant>
+#include <QUrl>
 
 namespace constants {
     static inline const QString SETTING_DEFAULT_INSTALL_DIR = QDir::homePath() + QDir::separator() + ".kocityqt";
     static inline const QVariant SETTING_DEFAULT_OFFLINE_USERNAME = QVariant(QStringLiteral("Brawler"));
     static inline const QString SETTING_PATH_USERNAME = QStringLiteral("auth/username");
-    static inline const QString SETTING_PATH_TOKEN = QStringLiteral("auth/token");
     static inline const QString SETTING_PATH_OFFLINE_USERNAME = QStringLiteral("offline-username");
     static inline const QString SETTING_PATH_INSTALL_DIR = QStringLiteral("directory");
     static inline const QString SETTING_PATH_SERVERS = QStringLiteral("servers/servers");

@@ -5,6 +5,7 @@
 #include <QtDBus/QDBusMessage>
 #include <QtDBus/QDBusConnection>
 #include <QInputDialog>
+#include <src/secrets.h>
 #include "add_server_dialog.h"
 #include "settings_dialog.h"
 #include "src/constants.h"
@@ -74,12 +75,25 @@ void kocity_qt::launchGame() {
         m_ui->statusBar->showMessage("Launching " + selectedServerName + " as " + username);
     } else if (authType == 1){
         QString username = m_settings->value(constants::SETTING_PATH_USERNAME).toString();
-        QString token = m_settings->value(constants::SETTING_PATH_TOKEN).toString();
-        if (username.isEmpty() || token.isEmpty()) {
+        if (username.isEmpty()) {
             QMessageBox::critical(this, constants::STR_ERROR, QStringLiteral("Before you can join this server, you must log in from the settings window."));
             return;
         }
         m_ui->statusBar->showMessage(QStringLiteral("Logging in and launching ") + selectedServerName);
+        // TODO retrieve token asynchronously?
+        GError *error = nullptr;
+        gchar *token_cstr = getTokenSync(username.toLocal8Bit().data(), &error);
+        const QString token(token_cstr);
+        secret_password_free(token_cstr);
+        if (error != nullptr) {
+            QMessageBox::critical(nullptr, constants::STR_ERROR, QStringLiteral("Could not retrieve login token: ") + error->message);
+            g_error_free(error);
+            return;
+        }
+        if (token.isEmpty()) {
+            QMessageBox::critical(nullptr, constants::STR_ERROR, QStringLiteral("No login token stored. Please log in again."));
+            return;
+        }
         m_launcher->getKeyAndLaunch(username, token, selectedAddress);
     } else {
         QString username = m_settings->value(constants::SETTING_PATH_OFFLINE_USERNAME, constants::SETTING_DEFAULT_OFFLINE_USERNAME).toString();
