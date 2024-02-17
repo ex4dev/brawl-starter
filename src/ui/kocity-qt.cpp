@@ -118,7 +118,7 @@ void kocity_qt::gameInstallationStarted() {
 }
 
 void kocity_qt::gameDownloadProgressUpdated(qint64 bytesReceived, qint64 bytesTotal) {
-    auto message = QDBusMessage::createSignal(QStringLiteral("/dev/tswanson/brawl-starter"), QStringLiteral("com.canonical.Unity.LauncherEntry"), QStringLiteral("Update"));
+    auto message = QDBusMessage::createSignal(QStringLiteral("/dev/tswanson/BrawlStarter"), QStringLiteral("com.canonical.Unity.LauncherEntry"), QStringLiteral("Update"));
     double percentComplete = (double) bytesReceived / bytesTotal;
     QVariantMap properties;
     properties.insert(QStringLiteral("progress-visible"), true);
@@ -143,7 +143,7 @@ void kocity_qt::gameInstallationFinished()
     m_download_progress_bar->deleteLater();
     // TODO linux check
     // Hide taskbar download progress
-    auto message = QDBusMessage::createSignal(QStringLiteral("/dev/tswanson/brawl-starter"), QStringLiteral("com.canonical.Unity.LauncherEntry"), QStringLiteral("Update"));
+    auto message = QDBusMessage::createSignal(QStringLiteral("/dev/tswanson/BrawlStarter"), QStringLiteral("com.canonical.Unity.LauncherEntry"), QStringLiteral("Update"));
     QVariantMap properties;
     properties.insert(QStringLiteral("progress-visible"), false);
     properties.insert(QStringLiteral("progress"), 0);
