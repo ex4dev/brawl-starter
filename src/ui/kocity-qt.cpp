@@ -5,6 +5,7 @@
 #include <QtDBus/QDBusMessage>
 #include <QtDBus/QDBusConnection>
 #include <QInputDialog>
+#include <KF6/KNotifications/KNotification>
 #include <src/secrets.h>
 #include "add_server_dialog.h"
 #include "settings_dialog.h"
@@ -141,7 +142,7 @@ void kocity_qt::gameInstallationFinished()
     m_ui->statusBar->showMessage(QStringLiteral("Installation complete."));
     m_ui->statusBar->removeWidget(m_download_progress_bar);
     m_download_progress_bar->deleteLater();
-    // TODO linux check
+
     // Hide taskbar download progress
     auto message = QDBusMessage::createSignal(QStringLiteral("/dev/tswanson/BrawlStarter"), QStringLiteral("com.canonical.Unity.LauncherEntry"), QStringLiteral("Update"));
     QVariantMap properties;
@@ -150,7 +151,17 @@ void kocity_qt::gameInstallationFinished()
     message << QStringLiteral("application://dev.tswanson.brawl-starter.desktop")
             << properties;
     QDBusConnection::sessionBus().send(message);
-    system(R"(notify-send -a brawl-starter "Installation complete" "Knockout City is installed and ready to be played.")");
+
+    // Desktop notification
+    KNotification *notification = new KNotification(QStringLiteral("installationComplete"), KNotification::CloseOnTimeout, this);
+    notification->setTitle(QStringLiteral("Installation complete"));
+    notification->setText(QStringLiteral("Knockout City is installed and ready to be played."));
+    notification->setComponentName(QGuiApplication::desktopFileName());
+    connect(notification->addDefaultAction(QStringLiteral("Show Launcher")), &KNotificationAction::activated, this, &activateWindow);
+    notification->sendEvent();
+
+    // Taskbar flash
+    QApplication::alert(this);
 }
 
 void kocity_qt::publicServersReceived(QJsonDocument document)

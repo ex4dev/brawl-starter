@@ -33,6 +33,7 @@ settings_dialog::settings_dialog(QSettings *settings) :
 
 void settings_dialog::browseInstallLocation() {
     QFileDialog dialog;
+    dialog.setDirectory(m_ui->fldInstallLocation->text());
     dialog.setOption(QFileDialog::ShowDirsOnly, true);
     if (dialog.exec()) {
         QString newDir = dialog.selectedFiles()[0];

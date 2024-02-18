@@ -13,6 +13,8 @@ find_package(Qt6Widgets CONFIG REQUIRED)
 find_package(Qt6Network REQUIRED)
 find_package(Qt6DBus REQUIRED)
 
+find_package(KF6Notifications REQUIRED)
+
 # Find libsecret
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(libsecret-1 REQUIRED IMPORTED_TARGET libsecret-1)
@@ -33,7 +35,7 @@ set(brawl-starter_SRC
 add_executable(brawl-starter ${brawl-starter_SRC})
 
 # Use the Widgets module from Qt 5.
-target_link_libraries(brawl-starter Qt6::Widgets Qt6::Network Qt6::DBus PkgConfig::libsecret-1)
+target_link_libraries(brawl-starter Qt6::Widgets Qt6::Network Qt6::DBus KF6::Notifications PkgConfig::libsecret-1)
 
 # Install the executable
 install(TARGETS brawl-starter DESTINATION bin)

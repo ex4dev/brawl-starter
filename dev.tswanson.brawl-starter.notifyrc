@@ -1,0 +1,9 @@
+[Global]
+IconName=dev.tswanson.brawl-starter
+Name=Brawl Starter
+DesktopEntry=dev.tswanson.brawl-starter
+
+[Event/installationComplete]
+Name=Installation Complete
+Comment=Knockout City is installed and ready to be played.
+Action=Popup
