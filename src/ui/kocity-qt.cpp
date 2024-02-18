@@ -124,7 +124,7 @@ void kocity_qt::gameDownloadProgressUpdated(qint64 bytesReceived, qint64 bytesTo
     properties.insert(QStringLiteral("progress-visible"), true);
     properties.insert(QStringLiteral("progress"), (percentComplete));
 
-    message << QStringLiteral("application://brawl-starter.desktop")
+    message << QStringLiteral("application://dev.tswanson.brawl-starter.desktop")
             << properties;
     QDBusConnection::sessionBus().send(message);
 
@@ -147,7 +147,7 @@ void kocity_qt::gameInstallationFinished()
     QVariantMap properties;
     properties.insert(QStringLiteral("progress-visible"), false);
     properties.insert(QStringLiteral("progress"), 0);
-    message << QStringLiteral("application://brawl-starter.desktop")
+    message << QStringLiteral("application://dev.tswanson.brawl-starter.desktop")
             << properties;
     QDBusConnection::sessionBus().send(message);
     system(R"(notify-send -a brawl-starter "Installation complete" "Knockout City is installed and ready to be played.")");
