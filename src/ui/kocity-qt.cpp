@@ -157,7 +157,7 @@ void kocity_qt::gameInstallationFinished()
     notification->setTitle(QStringLiteral("Installation complete"));
     notification->setText(QStringLiteral("Knockout City is installed and ready to be played."));
     notification->setComponentName(QGuiApplication::desktopFileName());
-    connect(notification->addDefaultAction(QStringLiteral("Show Launcher")), &KNotificationAction::activated, this, &activateWindow);
+    connect(notification->addDefaultAction(QStringLiteral("Show Launcher")), &KNotificationAction::activated, this, &QWidget::activateWindow);
     notification->sendEvent();
 
     // Taskbar flash
