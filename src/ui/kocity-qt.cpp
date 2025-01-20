@@ -5,7 +5,6 @@
 #include <QtDBus/QDBusMessage>
 #include <QtDBus/QDBusConnection>
 #include <QInputDialog>
-#include <KF6/KNotifications/KNotification>
 #include <src/secrets.h>
 #include "add_server_dialog.h"
 #include "settings_dialog.h"
@@ -151,14 +150,6 @@ void kocity_qt::gameInstallationFinished()
     message << QStringLiteral("application://dev.tswanson.brawl-starter.desktop")
             << properties;
     QDBusConnection::sessionBus().send(message);
-
-    // Desktop notification
-    KNotification *notification = new KNotification(QStringLiteral("installationComplete"), KNotification::CloseOnTimeout, this);
-    notification->setTitle(QStringLiteral("Installation complete"));
-    notification->setText(QStringLiteral("Knockout City is installed and ready to be played."));
-    notification->setComponentName(QGuiApplication::desktopFileName());
-    connect(notification->addDefaultAction(QStringLiteral("Show Launcher")), &KNotificationAction::activated, this, &QWidget::activateWindow);
-    notification->sendEvent();
 
     // Taskbar flash
     QApplication::alert(this);
