@@ -3,14 +3,14 @@
  <class>settings_dialog</class>
  <widget class="QDialog" name="settings_dialog">
   <property name="windowModality">
-   <enum>Qt::WindowModal</enum>
+   <enum>Qt::WindowModality::WindowModal</enum>
   </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>550</width>
-    <height>369</height>
+    <width>562</width>
+    <height>393</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -125,15 +125,52 @@
        </layout>
       </widget>
      </item>
+     <item>
+      <widget class="QGroupBox" name="steamGroupBox">
+       <property name="title">
+        <string>Steam</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QLabel" name="lblSteamExplainer">
+          <property name="text">
+           <string>Knockout City is installed and launched through Steam, which has some additional options.</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QPushButton" name="btnStorePage">
+            <property name="text">
+             <string>Open Store Page</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnSteamProperties">
+            <property name="text">
+             <string>Open Game Properties</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
     </layout>
    </item>
-   <item alignment="Qt::AlignBottom">
+   <item alignment="Qt::AlignmentFlag::AlignBottom">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Orientation::Horizontal</enum>
      </property>
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
      </property>
      <property name="centerButtons">
       <bool>false</bool>

@@ -21,6 +21,8 @@ class settings_dialog : public QDialog
         void saveSettings();
         void startLoginProcess();
         void createAccount();
+        void openSteamStorePage();
+        void openSteamProperties();
 
     private:
         void login(const QString &loginCode);

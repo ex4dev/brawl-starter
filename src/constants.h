@@ -17,6 +17,8 @@ namespace constants {
     static inline const QString SETTING_PATH_SERVER_PASSWORD = QStringLiteral("servers/password_");
 
     static inline const QString STEAM_RUN_URL = QStringLiteral("steam://run/2915930");
+    static inline const QString STEAM_STORE_URL = QStringLiteral("steam://store/2915930");
+    static inline const QString STEAM_PROPERTIES_URL = QStringLiteral("steam://gameproperties/2915930");
 
     static inline const QUrl XYZ_LOGIN_PAGE_URL = QUrl(QStringLiteral("https://api.kocity.xyz/web/discord"));
     static inline const QUrl XYZ_LOGIN_REQUEST_URL = QUrl(QStringLiteral("https://api.kocity.xyz/auth/login"));

@@ -22,6 +22,8 @@ settings_dialog::settings_dialog(QWidget *parent, QSettings *settings) : QDialog
     connect(m_ui->btnRegister, &QAbstractButton::clicked, this, &settings_dialog::createAccount);
     connect(m_ui->btnSignOut, &QAbstractButton::clicked, this, &settings_dialog::logout);
     connect(m_ui->buttonBox->button(QDialogButtonBox::Ok), &QAbstractButton::clicked, this, &settings_dialog::saveSettings);
+    connect(m_ui->btnStorePage, &QAbstractButton::clicked, this, &settings_dialog::openSteamStorePage);
+    connect(m_ui->btnSteamProperties, &QAbstractButton::clicked, this, &settings_dialog::openSteamProperties);
 
     m_ui->fldUsername->setText(m_settings->value(constants::SETTING_PATH_OFFLINE_USERNAME, constants::SETTING_DEFAULT_OFFLINE_USERNAME).toString());
 
@@ -126,4 +128,12 @@ void settings_dialog::createAccount() {
             reply->deleteLater();
         });
     }
+}
+
+void settings_dialog::openSteamStorePage() {
+    QDesktopServices::openUrl(QUrl(constants::STEAM_STORE_URL));
+}
+
+void settings_dialog::openSteamProperties() {
+    QDesktopServices::openUrl(QUrl(constants::STEAM_PROPERTIES_URL));
 }
