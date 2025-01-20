@@ -7,7 +7,6 @@
 #include <QStandardPaths>
 
 namespace constants {
-    static inline const QString SETTING_DEFAULT_INSTALL_DIR = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + QDir::separator() + ".kocity";
     static inline const QVariant SETTING_DEFAULT_OFFLINE_USERNAME = QVariant(QStringLiteral("Brawler"));
     static inline const QString SETTING_PATH_USERNAME = QStringLiteral("auth/username");
     static inline const QString SETTING_PATH_OFFLINE_USERNAME = QStringLiteral("offline-username");
@@ -17,7 +16,7 @@ namespace constants {
     static inline const QString SETTING_PATH_SERVER_AUTHENTICATION = QStringLiteral("servers/authentication_");
     static inline const QString SETTING_PATH_SERVER_PASSWORD = QStringLiteral("servers/password_");
 
-    static inline const QString RUNNER_PATH = QStringLiteral("/usr/bin/wine");
+    static inline const QString STEAM_RUN_URL = QStringLiteral("steam://run/2915930");
 
     static inline const QUrl XYZ_LOGIN_PAGE_URL = QUrl(QStringLiteral("https://api.kocity.xyz/web/discord"));
     static inline const QUrl XYZ_LOGIN_REQUEST_URL = QUrl(QStringLiteral("https://api.kocity.xyz/auth/login"));

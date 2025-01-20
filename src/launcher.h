@@ -10,8 +10,11 @@ class launcher final : public QObject
     Q_OBJECT
     public:
         launcher(QSettings *settings);
-        void launchGame(QString backend, QString username, QString secret = nullptr);
-        void getKeyAndLaunch(QString username, QString authToken, QString server);
+        void launchGame(const QString &backend, const QString &username, const QString &secret);
+        void launchGame(const QString &backend, const QString &username);
+        void launchGame(const QString &launchUrl);
+        void getKeyAndLaunch(const QString &username, const QString &authToken, const QString &server);
+
     private:
         QSettings *m_settings;
         QScopedPointer<QNetworkAccessManager> m_network_access_manager;

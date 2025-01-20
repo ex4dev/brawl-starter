@@ -13,7 +13,7 @@ static constexpr SecretSchema schema = {
         }
 };
 
-void storeToken(const gchar *username, const gchar *token) {
+void secrets::storeToken(const gchar *username, const gchar *token) {
     secret_password_store(
         &schema,
         SECRET_COLLECTION_DEFAULT,
@@ -33,7 +33,7 @@ void storeToken(const gchar *username, const gchar *token) {
     );
 }
 
-gchar *getTokenSync(const gchar *username, GError **error) {
+gchar *secrets::getTokenSync(const gchar *username, GError **error) {
     return secret_password_lookup_sync(
         &schema,
         nullptr,
@@ -42,7 +42,7 @@ gchar *getTokenSync(const gchar *username, GError **error) {
     );
 }
 
-void deleteToken(const gchar *username) {
+void secrets::deleteToken(const gchar *username) {
     secret_password_clear(
         &schema,
         nullptr,

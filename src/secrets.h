@@ -5,8 +5,10 @@
 #include <libsecret/secret.h>
 #define signals
 
-void storeToken(const gchar *username, const gchar *token);
-gchar *getTokenSync(const gchar *username, GError **error);
-void deleteToken(const gchar *username);
+namespace secrets {
+    void storeToken(const gchar *username, const gchar *token);
+    gchar *getTokenSync(const gchar *username, GError **error);
+    void deleteToken(const gchar *username);
+}
 
 #endif //SECRETS_H

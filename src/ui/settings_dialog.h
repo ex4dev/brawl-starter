@@ -15,10 +15,9 @@ class settings_dialog : public QDialog
 {
     Q_OBJECT
     public:
-        explicit settings_dialog(QSettings *settings);
+        explicit settings_dialog(QWidget *parent, QSettings *settings);
 
     private slots:
-        void browseInstallLocation();
         void saveSettings();
         void startLoginProcess();
         void createAccount();

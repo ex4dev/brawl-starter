@@ -12,7 +12,7 @@
 #include <QNetworkRequest>
 #include <QMessageBox>
 
-settings_dialog::settings_dialog(QSettings *settings) :
+settings_dialog::settings_dialog(QWidget *parent, QSettings *settings) : QDialog(parent),
     m_ui(new Ui::settings_dialog()),
     m_settings(settings),
     m_network_access_manager(new QNetworkAccessManager(this)) {
@@ -21,28 +21,15 @@ settings_dialog::settings_dialog(QSettings *settings) :
     connect(m_ui->btnLogIn, &QAbstractButton::clicked, this, &settings_dialog::startLoginProcess);
     connect(m_ui->btnRegister, &QAbstractButton::clicked, this, &settings_dialog::createAccount);
     connect(m_ui->btnSignOut, &QAbstractButton::clicked, this, &settings_dialog::logout);
-    connect(m_ui->btnBrowseInstallation, &QAbstractButton::clicked, this, &settings_dialog::browseInstallLocation);
     connect(m_ui->buttonBox->button(QDialogButtonBox::Ok), &QAbstractButton::clicked, this, &settings_dialog::saveSettings);
 
-    m_ui->fldInstallLocation->setText(m_settings->value(constants::SETTING_PATH_INSTALL_DIR, constants::SETTING_DEFAULT_INSTALL_DIR).toString());
     m_ui->fldUsername->setText(m_settings->value(constants::SETTING_PATH_OFFLINE_USERNAME, constants::SETTING_DEFAULT_OFFLINE_USERNAME).toString());
 
     updateLoginSection();
 
 }
 
-void settings_dialog::browseInstallLocation() {
-    QFileDialog dialog;
-    dialog.setDirectory(m_ui->fldInstallLocation->text());
-    dialog.setOption(QFileDialog::ShowDirsOnly, true);
-    if (dialog.exec()) {
-        QString newDir = dialog.selectedFiles()[0];
-        m_ui->fldInstallLocation->setText(newDir);
-    }
-}
-
 void settings_dialog::saveSettings() {
-    m_settings->setValue(constants::SETTING_PATH_INSTALL_DIR, m_ui->fldInstallLocation->text());
     m_settings->setValue(constants::SETTING_PATH_OFFLINE_USERNAME, m_ui->fldUsername->text());
 }
 
@@ -88,7 +75,7 @@ void settings_dialog::finishLogin(const QByteArray &responseData) {
     }
     QString username = obj.value("username").toString();
     m_settings->setValue(constants::SETTING_PATH_USERNAME, username);
-    storeToken(username.toLocal8Bit().data(), obj.value("authToken").toString().toLocal8Bit().data());
+    secrets::storeToken(username.toLocal8Bit().data(), obj.value("authToken").toString().toLocal8Bit().data());
 
     updateLoginSection();
 }
@@ -96,7 +83,7 @@ void settings_dialog::finishLogin(const QByteArray &responseData) {
 void settings_dialog::logout() {
     QString username = m_settings->value(constants::SETTING_PATH_USERNAME).toString();
     if (username.isEmpty()) return;
-    deleteToken(username.toLocal8Bit().data());
+    secrets::deleteToken(username.toLocal8Bit().data());
     m_settings->remove(constants::SETTING_PATH_USERNAME);
     updateLoginSection();
 }

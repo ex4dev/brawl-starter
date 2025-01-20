@@ -11,7 +11,6 @@ set(CMAKE_AUTOUIC ON)
 # Find the QtWidgets library
 find_package(Qt6Widgets CONFIG REQUIRED)
 find_package(Qt6Network REQUIRED)
-find_package(Qt6DBus REQUIRED)
 
 # Find libsecret
 find_package(PkgConfig REQUIRED)
@@ -22,7 +21,6 @@ set(brawl-starter_SRC
         src/ui/kocity-qt.cpp
         src/ui/add_server_dialog.cpp
         src/ui/settings_dialog.cpp
-        src/installer.cpp
         src/server_query.cpp
         src/launcher.cpp
         src/constants.h # TODO remove this??
@@ -33,7 +31,7 @@ set(brawl-starter_SRC
 add_executable(brawl-starter ${brawl-starter_SRC})
 
 # Use the Widgets module from Qt 5.
-target_link_libraries(brawl-starter Qt6::Widgets Qt6::Network Qt6::DBus PkgConfig::libsecret-1)
+target_link_libraries(brawl-starter Qt6::Widgets Qt6::Network PkgConfig::libsecret-1)
 
 # Install the executable
 install(TARGETS brawl-starter DESTINATION bin)

@@ -1,11 +1,8 @@
 #include "kocity-qt.h"
 #include "ui_kocity-qt.h"
-#include <qdialog.h>
 #include <QMessageBox>
-#include <QtDBus/QDBusMessage>
-#include <QtDBus/QDBusConnection>
 #include <QInputDialog>
-#include <src/secrets.h>
+#include "src/secrets.h"
 #include "add_server_dialog.h"
 #include "settings_dialog.h"
 #include "src/constants.h"
@@ -15,7 +12,6 @@ kocity_qt::kocity_qt(QWidget *parent) :
     m_ui(new Ui::kocity_qt),
     m_settings(new QSettings()),
     m_download_progress_bar(nullptr),
-    m_installer(new installer(m_settings.get())),
     m_launcher(new launcher(m_settings.get())),
     m_server_query_manager(new server_query())
 {
@@ -28,13 +24,6 @@ kocity_qt::kocity_qt(QWidget *parent) :
     connect(m_ui->actionAddServer, &QAction::triggered, this, &kocity_qt::addServer);
     connect(m_ui->actionRefresh, &QAction::triggered, this, &kocity_qt::refreshServerList);
     connect(m_ui->actionDeleteServer, &QAction::triggered, this, &kocity_qt::deleteServer);
-
-    if (!m_installer->checkInstalled()) m_ui->actionPlay->setText(QStringLiteral("Install"));
-
-    connect(m_installer.data(), &installer::installationStarted, this, &kocity_qt::gameInstallationStarted);
-    connect(m_installer.data(), &installer::progressUpdated, this, &kocity_qt::gameDownloadProgressUpdated);
-    connect(m_installer.data(), &installer::downloadFinished, this, &kocity_qt::gameDownloadFinished);
-    connect(m_installer.data(), &installer::finished, this, &kocity_qt::gameInstallationFinished);
 
     connect(m_server_query_manager.data(), &server_query::publicServersReceived, this, &kocity_qt::publicServersReceived);
 
@@ -55,10 +44,6 @@ void kocity_qt::insertTableRow(QTableWidget* tableWidget, QStringList itemText)
 }
 
 void kocity_qt::launchGame() {
-    if (!m_installer->checkInstalled()) {
-        m_installer->startGameInstallation();
-        return;
-    }
     QList<QTableWidgetItem*> selectedItems = m_ui->serverListWidget->selectedItems();
     if (selectedItems.size() == 0) {
         QMessageBox::critical(this, constants::STR_ERROR, QStringLiteral("Please select a server."));
@@ -82,7 +67,7 @@ void kocity_qt::launchGame() {
         m_ui->statusBar->showMessage(QStringLiteral("Logging in and launching ") + selectedServerName);
         // TODO retrieve token asynchronously?
         GError *error = nullptr;
-        gchar *token_cstr = getTokenSync(username.toLocal8Bit().data(), &error);
+        gchar *token_cstr = secrets::getTokenSync(username.toLocal8Bit().data(), &error);
         const QString token(token_cstr);
         secret_password_free(token_cstr);
         if (error != nullptr) {
@@ -104,55 +89,8 @@ void kocity_qt::launchGame() {
 }
 
 void kocity_qt::openSettings() {
-    settings_dialog settingsDialog(m_settings.get());
+    settings_dialog settingsDialog(this, m_settings.get());
     settingsDialog.exec();
-}
-
-void kocity_qt::gameInstallationStarted() {
-    m_ui->statusBar->showMessage(QStringLiteral("Downloading files..."));
-    if (m_download_progress_bar == nullptr) {
-        m_download_progress_bar = new QProgressBar(this);
-        m_ui->statusBar->addPermanentWidget(m_download_progress_bar);
-    }
-    m_download_progress_bar->setValue(0);
-}
-
-void kocity_qt::gameDownloadProgressUpdated(qint64 bytesReceived, qint64 bytesTotal) {
-    auto message = QDBusMessage::createSignal(QStringLiteral("/dev/tswanson/BrawlStarter"), QStringLiteral("com.canonical.Unity.LauncherEntry"), QStringLiteral("Update"));
-    double percentComplete = (double) bytesReceived / bytesTotal;
-    QVariantMap properties;
-    properties.insert(QStringLiteral("progress-visible"), true);
-    properties.insert(QStringLiteral("progress"), (percentComplete));
-
-    message << QStringLiteral("application://dev.tswanson.brawl-starter.desktop")
-            << properties;
-    QDBusConnection::sessionBus().send(message);
-
-    m_download_progress_bar->setValue(100 * percentComplete);
-}
-
-void kocity_qt::gameDownloadFinished() {
-    m_ui->statusBar->showMessage(QStringLiteral("Extracting downloaded files..."));
-}
-
-void kocity_qt::gameInstallationFinished()
-{
-    m_ui->actionPlay->setText(QStringLiteral("Play"));
-    m_ui->statusBar->showMessage(QStringLiteral("Installation complete."));
-    m_ui->statusBar->removeWidget(m_download_progress_bar);
-    m_download_progress_bar->deleteLater();
-
-    // Hide taskbar download progress
-    auto message = QDBusMessage::createSignal(QStringLiteral("/dev/tswanson/BrawlStarter"), QStringLiteral("com.canonical.Unity.LauncherEntry"), QStringLiteral("Update"));
-    QVariantMap properties;
-    properties.insert(QStringLiteral("progress-visible"), false);
-    properties.insert(QStringLiteral("progress"), 0);
-    message << QStringLiteral("application://dev.tswanson.brawl-starter.desktop")
-            << properties;
-    QDBusConnection::sessionBus().send(message);
-
-    // Taskbar flash
-    QApplication::alert(this);
 }
 
 void kocity_qt::publicServersReceived(QJsonDocument document)
